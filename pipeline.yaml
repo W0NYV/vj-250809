@@ -1,8 +1,12 @@
 stages:
   - fs: "shaders/lighting.glsl"
     target: "lightingTex"
+  - fs: "shaders/main.glsl"
+    target: "mainTex"
   - fs : "shaders/dest.glsl"
     
 images:
   - path: "testPattern.jpg"
     name: "testPatternTex"
+  - path: "mask.png"
+    name: "maskTex"
