@@ -3,6 +3,13 @@ stages:
     target: "lightingTex"
   - fs: "shaders/main.glsl"
     target: "mainTex"
+  - fs: "shaders/sobel.glsl"
+    resolution: [960, 540]
+    target: "sobelTex"
+  - fs: "shaders/mainPostEffect.glsl"
+    target: "mainOutTex"
+  - fs: "shaders/mainMask.glsl"
+    target: "mainMaskTex"
   - fs : "shaders/dest.glsl"
     
 images:

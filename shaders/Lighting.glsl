@@ -9,7 +9,6 @@ void main() {
     vec2 uv = (gl_FragCoord.xy / resolution.xy);
     
     float id = floor(uv.x * 7.0);
-    vec2 fuv = vec2(fract(uv.x * 7.0), uv.y);
     
     vec3 rnd = hash(vec3(id * 100.0, 804.53, 523.32));
     vec3 rndBeat = hash(vec3(floor(beat), id * 100.0, 523.32));

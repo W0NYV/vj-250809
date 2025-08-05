@@ -24,12 +24,21 @@ vec3 hash(vec3 v) {
     return vec3(r) / float(0xffffffffu);
 }
 
+float getIntensity(vec3 col) {
+    return dot(col, vec3(0.299, 0.587, 0.114));
+}
+
 float easeInExpo(float r, float x) {
     return x == 0.0 ? 0.0 : pow(r, 10.0 * x - 10.0);
 }
 
 float easeOutExpo(float x) {
     return x == 1.0 ? 1.0 : 1.0 - pow(2.0, - 10.0 * x);
+}
+
+float easeOutElastic(float x) {
+    float c4 = (2.0 * acos(-1.0)) / 3.0;
+    return x == 0.0 ? 0.0 : x == 1.0 ? 1.0 : pow(2.0, -10.0 * x) * sin((x * 10.0 - 0.75) * c4) + 1.0;
 }
 
 vec3 hsv2rgb(vec3 c)
@@ -59,4 +68,25 @@ vec3 cyclic( vec3 p, float pump ) {
     }
 
     return sum.xyz / sum.w;
+}
+
+vec3[9] mooreNeighborhood(sampler2D tex, vec2 fragCoord, vec2 resolution) {
+    vec3 mc = texture(tex, (fragCoord + vec2(0.0, 0.0))/resolution.xy).rgb;
+    vec3 mr = texture(tex, (fragCoord + vec2(1.0, 0.0))/resolution.xy).rgb;
+    vec3 ml = texture(tex, (fragCoord + vec2(-1.0, 0.0))/resolution.xy).rgb;
+
+    vec3 tc = texture(tex, (fragCoord + vec2(0.0, 1.0))/resolution.xy).rgb;
+    vec3 tr = texture(tex, (fragCoord + vec2(1.0, 1.0))/resolution.xy).rgb;
+    vec3 tl = texture(tex, (fragCoord + vec2(-1.0, 1.0))/resolution.xy).rgb;
+
+    vec3 bc = texture(tex, (fragCoord + vec2(0.0, -1.0))/resolution.xy).rgb;
+    vec3 br = texture(tex, (fragCoord + vec2(1.0, -1.0))/resolution.xy).rgb;
+    vec3 bl = texture(tex, (fragCoord + vec2(-1.0, -1.0))/resolution.xy).rgb;
+
+    vec3[9] array;
+    array[0] = tl, array[1] = tc, array[2] = tr;
+    array[3] = ml, array[4] = mc, array[5] = mr;
+    array[6] = bl, array[7] = bc, array[8] = br;
+
+    return array;
 }
