@@ -7,6 +7,10 @@ uniform float beat;
 uniform float sliders[32];
 uniform vec4 buttons[32];
 
+mat2 rot(float r) {
+    return mat2(cos(r), -sin(r), sin(r), cos(r));
+}
+
 vec3 hash(vec3 v) {
     uvec3 r = floatBitsToUint(v);
     r = r * 1664525u + 1013904223u;
@@ -89,4 +93,9 @@ vec3[9] mooreNeighborhood(sampler2D tex, vec2 fragCoord, vec2 resolution) {
     array[6] = bl, array[7] = bc, array[8] = br;
 
     return array;
+}
+
+float sdBox(vec2 p, vec2 b) {
+    vec2 d = abs(p)-b;
+    return length(max(d,0.0)) + min(max(d.x,d.y),0.0);
 }

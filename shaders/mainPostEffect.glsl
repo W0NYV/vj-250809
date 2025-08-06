@@ -15,7 +15,7 @@ void main() {
     vec3 noise = cyclic(vec3(uv * 3.0, floor(beat*8.0)), 2.0);
 
     vec4 main = texture(mainTex, uv);
-    vec4 sobel = texture(sobelTex, uv + noise.xy * 0.02);
+    vec4 sobel = texture(sobelTex, uv + noise.xy * 0.015);
 
     color = main + sobel;
 }
