@@ -64,7 +64,7 @@ float m004(vec2 p) {
 }
 
 float m005(vec2 p) {
-    return pow(length(fract(-p.y * 0.25 - beat / 8.0)), 2.0);
+    return clamp(pow(abs(sin(-p.y - beat / 2.0)), 5.0) + 0.1, 0.0, 1.0);
 }
 
 float m006() {
@@ -112,6 +112,20 @@ float m006() {
     return dest;
 }
 
+float m007() {
+
+    vec2 uv = (gl_FragCoord.xy / resolution.xy);
+    float aspect = resolution.y/resolution.x;
+
+    uv.y *= 7.0 * aspect;
+    uv.y -= sin(beat / 2.0 + floor(uv.x*7.0)/7.0*acos(-1.0)*2.0) + 1.8;
+    vec2 fp = vec2(fract(uv.x*7.0), uv.y) - 0.5;
+
+    float dist = abs(fp.x)+abs(fp.y);
+    
+    return pow(sin(sdBox(fp, vec2(1.0)) * 10.0 - beat * 4.0), 3.0) * step((length(fp.x)), 0.4);
+}
+
 void main() {
     
     vec2 p = (gl_FragCoord.xy * 2.0 - resolution.xy) / min(resolution.x, resolution.y);
@@ -119,7 +133,7 @@ void main() {
     
     int offset = 16;
     int minIdx = offset;
-    for (int i = 0; i < 6; i++)
+    for (int i = 0; i < 7; i++)
     {
         if (buttons[i + offset].y < buttons[minIdx].y)
         {
@@ -133,8 +147,9 @@ void main() {
     dest = minIdx == offset + 3 ? m004(p) : dest;
     dest = minIdx == offset + 4 ? m005(p) : dest;
     dest = minIdx == offset + 5 ? m006() : dest;
+    dest = minIdx == offset + 6 ? m007() : dest;
 
-    vec3 col = vec3(0.1, 0.8, 1.0) * dest;
+    vec3 col = vec3(0.1, 0.8, 0.5) * dest;
     
     color = vec4(col, 1.0);
 }

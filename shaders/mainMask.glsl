@@ -32,7 +32,7 @@ void main() {
     }
     else if (minIdx == offset + 1)
     {
-        dest = vec3(step(rndBeat.x, 0.5) * easeInExpo(1.05, fract(-beat)));
+        dest = vec3(step(rndBeat.x, 0.75) * easeInExpo(1.05, fract(-beat)));
     }
     else if(minIdx == offset + 2)
     {
@@ -44,7 +44,7 @@ void main() {
     }
     else if(minIdx == offset + 4)
     {
-        dest = vec3(sin(4.0*acos(-1.0)*id/7.0 + -beat * 2.0));
+        dest = vec3(sin(4.0*acos(-1.0)*id/7.0 + -beat * 4.0));
     }
     
     color = vec4(dest, 1.0);

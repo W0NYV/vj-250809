@@ -31,7 +31,7 @@ void main() {
     }
     else if (minIdx == 1)
     {
-        dest = vec3(step(rndBeat.x, 0.5) * easeInExpo(1.35, fract(-beat)));
+        dest = vec3(step(rndBeat.x, 0.75) * easeInExpo(1.35, fract(-beat)));
     }
     else if(minIdx == 2)
     {
@@ -43,7 +43,7 @@ void main() {
     }
     else if(minIdx == 4)
     {
-        dest = vec3(sin(4.0*acos(-1.0)*id/6.0 + -beat * 2.0));
+        dest = vec3(sin(4.0*acos(-1.0)*id/6.0 + -beat * 4.0));
     }
     
     color = vec4(dest * col * sliders[1], 1.0);
