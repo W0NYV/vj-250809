@@ -17,7 +17,7 @@ void main() {
     vec3 col = hsv2rgb(vec3(sliders[3], sliders[2], 1.0));
 
     int minIdx = 0;
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < 5; i++)
     {
         if (buttons[i].y < buttons[minIdx].y)
         {
@@ -40,6 +40,10 @@ void main() {
     else if(minIdx == 3)
     {
         dest = vec3(mod(id + floor(beat), 2.0) == 0.0 ? 0.0 : easeInExpo(1.35, fract(-beat)));
+    }
+    else if(minIdx == 4)
+    {
+        dest = vec3(sin(4.0*acos(-1.0)*id/6.0 + -beat * 2.0));
     }
     
     color = vec4(dest * col * sliders[1], 1.0);

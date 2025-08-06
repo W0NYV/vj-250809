@@ -63,27 +63,53 @@ float m004(vec2 p) {
     return min(dest, 1.0);
 }
 
-float m005(vec2 p)
-{
-    float c = 0.0;
-    vec2 reso = vec2(160.0, 90.0);
-    vec2 p2 = p;
-    vec3 rnd = hash(vec3(floor(beat), 64.3, 123.12));
+float m005(vec2 p) {
+    return pow(length(fract(-p.y * 0.25 - beat / 8.0)), 2.0);
+}
 
-    for (float i = 0.0; i < 8.0; i += 1.0)
-    {
-        vec3 rnd2 = hash(vec3(435.23, floor(beat), i));
-        vec3 n = cyclic(vec3(p.x * 1.2 + i * 0.5, beat / 2.0, (floor(beat) + easeOutExpo(fract(beat))) * 2.0), 10.0);
+float m006() {
 
-        float circle = step(abs(length(floor((p2 - (rnd2.xy * 2.0 - 1.0) * vec2(2.0, 1.0)) * reso) / reso) - 0.2 - rnd2.z * 0.2), 0.01);
-        c += circle;
+    vec2 uv = (gl_FragCoord.xy / resolution.xy);
 
-        p *= rot(acos(-1.0) * (rnd.x * 2.0 - 1.0) * 0.15);
+    float aspect = resolution.y/resolution.x;
+    
+    vec3 s = hash(vec3(floor(uv.x*7.0), 342.23, 65.45));
+    uv.y += beat / 8.0 * (0.8 + s.y * 0.2) + s.x;
 
-        c += step(length((floor(p.y*reso)/reso) + n.x * 0.3), 0.02);
+    vec2 ip = floor(uv*vec2(7.0, 7.0 * aspect)) - 0.5;
+    vec2 fp = fract(uv*vec2(7.0, 7.0 * aspect)) - 0.5;
+    vec3 rnd = hash(vec3(ip, 431.21));
+    vec3 rndBeat = hash(vec3(ip, floor(beat)));
+
+    float dest = 0.0;
+
+    if (rnd.x < 0.25) {
+        vec2 p2 = fp;
+        p2 *= rot(acos(-1.0)/4.0);
+        p2.x += beat * 0.1;
+        dest = step(sin(p2.x*40.0), 0.0) * step(sdBox(fp, vec2(0.35)), 0.0);
+    } else if (rnd.x < 0.5) {
+        vec2 p2 = fp;
+        float time = easeOutExpo(fract(beat))*0.375;
+        p2 *= rot(acos(-1.0)/-4.0);
+        float f = step(sdChamferBox(p2, vec2(0.4)), 0.0);
+        float ff = step(sdChamferBox(p2, vec2(time)), 0.0);
+        dest = f - ff;
+    } else if (rnd.x < 0.75) {
+        vec2 p2 = fp;
+        p2 *= rot(acos(-1.0)/4.0);
+        p2 *= rot(acos(-1.0)/4.0 * 2.0 * floor(rndBeat.x*4.0));
+        vec2 p3 = p2;
+        p2.y += 0.4;
+        p2.x = abs(p2.x);
+        p2 *= rot(acos(-1.0)/4.0) * skew(acos(-1.0)/-4.0);
+        p2.x -= 0.15;
+        float f = step(sdBox(p2, vec2(0.4, 0.1)), 0.0);
+        f += step(sdBox(p3, vec2(0.125, 0.35)), 0.0);
+        dest = min(1.0, f);
     }
     
-    return c;
+    return dest;
 }
 
 void main() {
@@ -93,7 +119,7 @@ void main() {
     
     int offset = 16;
     int minIdx = offset;
-    for (int i = 0; i < 5; i++)
+    for (int i = 0; i < 6; i++)
     {
         if (buttons[i + offset].y < buttons[minIdx].y)
         {
@@ -106,6 +132,7 @@ void main() {
     dest = minIdx == offset + 2 ? m003(p) : dest;
     dest = minIdx == offset + 3 ? m004(p) : dest;
     dest = minIdx == offset + 4 ? m005(p) : dest;
+    dest = minIdx == offset + 5 ? m006() : dest;
 
     vec3 col = vec3(0.1, 0.8, 1.0) * dest;
     

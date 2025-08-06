@@ -8,7 +8,11 @@ uniform float sliders[32];
 uniform vec4 buttons[32];
 
 mat2 rot(float r) {
-    return mat2(cos(r), -sin(r), sin(r), cos(r));
+    return mat2(cos(r), sin(r), -sin(r), cos(r));
+}
+
+mat2 skew(float v) {
+    return mat2(1.0, tan(v), 0.0, 1.0);
 }
 
 vec3 hash(vec3 v) {
@@ -98,4 +102,14 @@ vec3[9] mooreNeighborhood(sampler2D tex, vec2 fragCoord, vec2 resolution) {
 float sdBox(vec2 p, vec2 b) {
     vec2 d = abs(p)-b;
     return length(max(d,0.0)) + min(max(d.x,d.y),0.0);
+}
+
+float sdChamferBox(vec2 p, vec2 b) {
+    p = abs(p) - b;
+    p.y += 0.3;
+
+    const float k = 1.0-sqrt(2.0);
+    if( p.y<0.0 && p.y+p.x*k<0.0 ) return p.x;
+    if( p.x<p.y ) return (p.x+p.y)*sqrt(0.5);
+    return length(p);
 }
