@@ -228,6 +228,12 @@ float m016() {
     return d;
 }
 
+float m017() {
+    vec2 uv = (gl_FragCoord.xy / resolution.xy);
+    vec3 h = vec3(floor(uv * vec2(7.0, 6.0)), floor(beat*2.0));
+    return hash(h).r;
+}
+
 void main() {
     
     vec2 p = (gl_FragCoord.xy * 2.0 - resolution.xy) / min(resolution.x, resolution.y);
@@ -243,7 +249,7 @@ void main() {
         }
     }
     
-    dest = minIdx == offset ? m001(p) : dest;
+    dest = minIdx == offset ? m017() : dest; //m001(p) : dest;
     dest = minIdx == offset + 1 ? m002() : dest;
     dest = minIdx == offset + 2 ? m003(p) : dest;
     dest = minIdx == offset + 3 ? m004(p) : dest;
