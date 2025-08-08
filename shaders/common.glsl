@@ -127,3 +127,78 @@ float sdChamferBox(vec2 p, vec2 b) {
     if( p.x<p.y ) return (p.x+p.y)*sqrt(0.5);
     return length(p);
 }
+
+float S(float x)
+{
+    float s = 16.0 / 1920.0;
+    return smoothstep(-s, s, x);
+}
+
+float eye(vec2 uv, float time, float offset){
+
+    float openDeg = 4.5;
+
+    float PI = acos(-1.0);
+
+    float fsty = fract(uv.y) - 0.5;
+    vec2 fst = vec2(uv.x * PI * 2.0 - 0.5 * PI, fsty);
+    
+    float eyeOpen = (sin(time*2.0 + (acos(-1.0)*2.0*(offset/4.0))) + 1.0) / 2.0;
+    eyeOpen = 1.0 - pow(eyeOpen, 3.0);
+    
+    float col = (sin(fst.x) + 1.)/2.0;
+    float col2 = col* eyeOpen + fst.y*openDeg - 0.1;
+    col = col* eyeOpen - fst.y*openDeg - 0.1;
+    float cs1 = min(col - 0.1, col2- 0.1);
+    float cs2 = S(cs1);
+    col = S(min(col, col2));
+    //col = step(0.1, col);
+    vec2 loc = vec2(fract(fst.x/PI/2.0 + PI*2.0) - 0.53,fst.y);
+    
+    float lloc = length(loc);
+
+    float iris = abs((length(loc)*15.0) - 2.0);
+    float iris2 = abs((length(loc)*15.0) - 1.0);
+    float iris3 = length(loc)*9.0;
+    
+    iris *= iris2 * iris3;
+    
+    return min(col, mix(1.0, S(-iris + 0.15), cs2));
+}
+
+struct Subdiv
+{
+    vec2 id;
+    vec2 uv;
+    vec2 size;
+    int count;
+};
+
+Subdiv subdivision(vec2 p) {
+    vec2 size = vec2(0.5);
+    Subdiv dest;
+
+    for (int i = 0; i < 4; i++) {
+        dest.id = (floor(p/size)) * size;
+        dest.uv = fract(p/size);
+
+        vec3 hash = hash(vec3(dest.id, floor(beat)));
+
+        if (i != 0 && hash.x < 0.5) {
+            break;
+        } else {
+            size *= 0.5;
+            dest.count++;
+        }
+    }
+
+    dest.size = size;
+    return dest;
+}
+
+vec2 skew2 (vec2 st) {
+    vec2 r = vec2(0.0, 0.0);
+    r.x = 1.1547*st.x;
+    r.y = st.y+0.5*r.x;
+    return r;
+}

@@ -23,7 +23,7 @@ void main() {
     
     vec4 col = mix(main, lighting, mask);
     
-    col = mix(col, testPattern, sliders[0]);
+    col = mix(col, testPattern, sliders[31]);
     
     color = col;
 }

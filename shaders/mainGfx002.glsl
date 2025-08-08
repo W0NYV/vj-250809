@@ -113,4 +113,120 @@ float m021() {
     return clamp(step(sdBox(fp, vec2(0.06, 0.4)), 0.0001) + step(sdBox(fp, vec2(0.4, 0.06)), 0.0001), 0.0, 1.0);
 }
 
-// 目、マルチタイルとるシェっと
+float m022() {
+
+    vec2 uv = (gl_FragCoord.xy / resolution.xy);
+
+    uv.y -= 0.175;
+
+    vec2 fp = vec2(fract(uv.x*7.0), fract(uv.y*3.7));
+
+    float offset = hash(vec3(floor(uv.x*7.0), floor(uv.y*3.7), 341.23)).r * 2.0;
+
+    return eye(fp, beat, offset);
+}
+
+float m023() {
+
+    vec2 uv = (gl_FragCoord.xy / resolution.xy);
+
+    uv.y += beat/16.0;
+    uv.y *= resolution.y/resolution.x;
+
+    Subdiv subdiv = subdivision(fract(uv*7.0*0.25));
+    
+    float f = 0.0;
+    
+    float rnd = hash(vec3(floor(beat), subdiv.id)).r;
+
+    vec2 p = subdiv.uv;
+
+    p -= 0.5;
+    p *= rot(acos(-1.0)/2.0*floor(rnd*2.0));
+    p += 0.5;
+
+    float c0 = step(length(p), 2.0/3.0) + step(length(p-vec2(1.0,1.0)), 2.0/3.0);
+    float c1 = step(length(p), 1.0/3.0) + step(length(p-vec2(1.0,1.0)), 1.0/3.0);
+    float c2 = step(length(p), 1.0/6.0) + step(length(p-vec2(1.0,1.0)), 1.0/6.0);
+    float c2i = step(length(p-vec2(1.0, 0.0)), 1.0/6.0) + step(length(p-vec2(0.0,1.0)), 1.0/6.0);
+    float c3 = step(length(p), 1.0/12.0) + step(length(p-vec2(1.0,1.0)), 1.0/12.0);
+    float c3i = step(length(p-vec2(1.0, 0.0)), 1.0/12.0) + step(length(p-vec2(0.0,1.0)), 1.0/12.0);
+    float c3r = step(length(p-vec2(0.5, 0.0)), 1.0/12.0) + step(length(p-vec2(0.5,1.0)), 1.0/12.0);
+    float c3ri = step(length(p-vec2(0.0, 0.5)), 1.0/12.0) + step(length(p-vec2(1.0,0.5)), 1.0/12.0);
+
+    if (subdiv.count == 1) {
+        f = (c0 - c1) + (c2 + c2i) - (c3 + c3i + c3r + c3ri);
+    } else if (subdiv.count == 2) {
+        f = 1.0 - (c2 + c2i + c0 - c1);
+    } else if (subdiv.count == 3 || subdiv.count == 4) {
+        f = c0 - c1;
+    }
+
+
+    return f;
+}
+
+float m024() {
+
+    vec2 uv = (gl_FragCoord.xy / resolution.xy);
+    float aspect = resolution.y/resolution.x;
+    vec2 fp = vec2(fract(uv.x*7.0), uv.y);
+
+    fp += cyclic(vec3(fp + floor(uv.x*7.0), beat), 10.0).xy * 0.2;
+    fp *= rot(acos(-1.0)/7.0*floor(uv.x*7.0)+beat/16.0);
+
+    float f = step(fract(fp.x * 2.0 + beat / 2.0), 0.075) + step(fract(fp.y * 7.0 * aspect), 0.075);
+
+    return clamp(f, 0.0, 1.0);
+}
+
+float m025() {
+
+    vec2 uv = (gl_FragCoord.xy / resolution.xy);
+
+    uv.y *= resolution.y/resolution.x;
+    uv.x -= beat / 32.0;
+    vec2 fp = fract(skew2(uv * 7.0));
+    vec2 ip = floor(skew2(uv * 7.0));
+    float isUp = fp.x > fp.y ? 1.0 : 0.0;
+
+    float r = hash(vec3(ip + isUp, floor(beat))).x;
+    float rNext = hash(vec3(ip + isUp, floor(beat+1.0))).x;
+
+    return clamp(pow(mix(r, rNext, easeInExpo(2.0, fract(beat))), 4.0), 0.0, 1.0);
+}
+
+float m026(vec2 p) {
+    p.y -= 0.925;
+
+    float f = 0.0;
+
+    for (float i = 0.0; i <= 10.0; i += 0.5) {
+        f += step(sdBox(p + vec2(sin(beat / 2.0 + acos(-1.0)/5.0*i) * 1.67, (i/10.0)*1.5), vec2(0.1, 0.02)), 0.0);
+        f += step(length(p + vec2(sin(-beat / 2.0 - acos(-1.0)/5.0*i) * 1.67, (i/10.0)*1.5)), 0.05);
+    }
+
+    return f;
+
+}
+
+float m027() {
+
+    vec2 uv = (gl_FragCoord.xy / resolution.xy);
+    vec2 fp = vec2(fract(uv.x*7.0), uv.y);
+    vec2 ip = vec2(floor(uv.x*7.0), uv.y);
+
+    vec3 rnd = hash(vec3(ip.x, 31.21, floor(beat/2.0)));
+    vec3 rndNext = hash(vec3(ip.x, 31.21, floor(beat/2.0)+1.0));
+    rnd = mix(rnd, rndNext, easeOutExpo(fract(beat/2.0)));
+    float t = floor(beat)+easeInExpo(2.0, fract(beat));
+    return sin(sin(fp.x*5.0+beat)+fp.x*2.0+2.0*beat+t+cos(fp.y*4.0+fp.x*3.0*rnd.x+rnd.y*acos(-1.0)*2.0)*10.0+rnd.z*acos(-1.0)*2.0);
+}
+
+float m028() {
+
+    vec2 uv = (gl_FragCoord.xy / resolution.xy);
+    vec2 ip = vec2(floor(uv.x*7.0), uv.y);
+
+    return sin(beat/2.0 + acos(-1.0)/7.0*ip.x)*0.5+0.5;
+}
