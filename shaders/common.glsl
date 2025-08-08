@@ -32,6 +32,13 @@ vec3 hash(vec3 v) {
     return vec3(r) / float(0xffffffffu);
 }
 
+vec2 randomNormal(vec2 p) {
+    float c = sqrt(-2.0 * log(p.x));
+    float r = 2.0 * p.y * acos(-1.0);
+
+    return vec2(c * cos(r), c * sin(r));
+}
+
 float getIntensity(vec3 col) {
     return dot(col, vec3(0.299, 0.587, 0.114));
 }

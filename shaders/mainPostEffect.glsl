@@ -27,5 +27,5 @@ void main() {
     vec4 sobel = texture(sobelTex, uv + noise.xy * 0.015);
     vec4 edge = vec4(edge(uv)) * abs(sin(beat*acos(-1.0)/8.0));
     
-    color = main + sobel + edge;
+    color = main;// + sobel + edge;
 }
