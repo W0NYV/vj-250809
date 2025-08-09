@@ -6,6 +6,8 @@ stages:
   - fs: "shaders/sobel.glsl"
     resolution: [1280, 720]
     target: "sobelTex"
+  - fs: "shaders/logoSobel.glsl"
+    target: "logoOutTex"
   - fs: "shaders/mainPostEffect.glsl"
     target: "mainOutTex"
   - fs: "shaders/mainMask.glsl"
@@ -17,3 +19,5 @@ images:
     name: "testPatternTex"
   - path: "mask.png"
     name: "maskTex"
+  - path: "logo.png"
+    name: "logoTex"
