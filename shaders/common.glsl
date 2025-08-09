@@ -202,3 +202,7 @@ vec2 skew2 (vec2 st) {
     r.y = st.y+0.5*r.x;
     return r;
 }
+
+vec3 pal(float t, vec3 a, vec3 b, vec3 c, vec3 d ) {
+    return a + b*cos( 6.28318*(c*t+d) );
+}

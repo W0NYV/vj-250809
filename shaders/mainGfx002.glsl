@@ -230,3 +230,68 @@ float m028() {
 
     return sin(beat/2.0 + acos(-1.0)/7.0*ip.x)*0.5+0.5;
 }
+
+float m029() {
+
+    vec2 uv = (gl_FragCoord.xy / resolution.xy);
+    vec2 fp = vec2(fract(uv.x*7.0), uv.y) - 0.5;
+    fp.y -= 0.085;
+
+    float f = 0.0;
+
+    float offset = floor(hash(vec3(floor(uv.x*7.0), 23.12, floor(beat/2.0))).r * 5.0);
+
+    f += mod(floor(offset + beat*4.0), 5.0) == 0.0 ? step(sdBox(fp, vec2(0.4, 0.4)), 0.0) - step(sdBox(fp, vec2(0.35, 0.385)), 0.0) : 0.0;
+    f += mod(floor(offset + beat*4.0), 5.0) == 1.0 ? step(sdBox(fp, vec2(0.3, 0.365)), 0.0) - step(sdBox(fp, vec2(0.25, 0.355)), 0.0) : 0.0; 
+    f += mod(floor(offset + beat*4.0), 5.0) == 2.0 ? step(sdBox(fp, vec2(0.2, 0.335)), 0.0) - step(sdBox(fp, vec2(0.15, 0.325)), 0.0) : 0.0;
+    f += mod(floor(offset + beat*4.0), 5.0) == 3.0 ? step(sdBox(fp, vec2(0.1, 0.305)), 0.0) - step(sdBox(fp, vec2(0.05, 0.295)), 0.0) : 0.0;
+    f += mod(floor(offset + beat*4.0), 5.0) == 4.0 ? step(sdBox(fp, vec2(0.0125, 0.285)), 0.0) : 0.0;
+
+    return f;
+}
+
+float m030() {
+
+    vec2 uv = (gl_FragCoord.xy / resolution.xy);
+
+    float aspect = resolution.y/resolution.x;
+
+    float offset = hash(vec3(floor(uv.x*49.0), floor(beat/4.0), 12.12)).r;
+    uv.y += (offset - 0.5) * (floor(beat) + easeOutExpo(fract(beat))) + (offset - 0.5) * beat * 0.25;
+
+    vec2 ip = vec2(floor(uv.x*49.0), floor(uv.y*14.0*aspect));
+
+    float f = step(hash(vec3(ip, 31.21)).r, 0.2);
+
+    return f;
+}
+
+float m031() {
+
+    vec2 uv = (gl_FragCoord.xy / resolution.xy);
+    vec2 fp = vec2(fract(uv.x*7.0), uv.y) - 0.5;
+    fp.y -= 0.085;
+
+    float s = hash(vec3(floor(uv.x*7.0), floor(beat), 231.12)).r;
+    float sNext = hash(vec3(floor(uv.x*7.0), floor(beat)+1.0, 231.12)).r;
+    s = mix(s, sNext, easeOutExpo(fract(beat))) * 0.45 + sin(beat/4.0) * 0.1;
+
+    return step(sdBox(fp, vec2(0.5, s)), 0.0);
+}
+
+float m032() {
+
+    vec2 uv = (gl_FragCoord.xy / resolution.xy);
+
+    uv.y += beat/8.0;
+
+    vec2 ip = vec2(floor(uv.x*7.0), floor(uv.y*90.0));
+
+    float r = hash(vec3(ip, floor(beat))).r;
+    float rNext = hash(vec3(ip, floor(beat)+1.0)).r;
+    r = mix(r, rNext, easeOutElastic(fract(beat)));
+
+    return pow(r, 6.0);
+
+}
+
