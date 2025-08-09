@@ -4,7 +4,7 @@ stages:
   - fs: "shaders/main.glsl"
     target: "mainTex"
   - fs: "shaders/sobel.glsl"
-    resolution: [960, 540]
+    resolution: [1280, 720]
     target: "sobelTex"
   - fs: "shaders/mainPostEffect.glsl"
     target: "mainOutTex"
