@@ -18,7 +18,7 @@ void main() {
     int offset = 8;
     
     int minIdx = offset;
-    for (int i = 0; i < 5; i++)
+    for (int i = 0; i < 8; i++)
     {
         if (buttons[i + offset].y < buttons[minIdx].y)
         {
@@ -46,7 +46,19 @@ void main() {
     {
         dest = vec3(sin(4.0*acos(-1.0)*id/7.0 + -beat * 4.0));
     }
-    
+    else if(minIdx == offset + 5)
+    {
+        dest = vec3(sin(acos(-1.0)*id/7.0 + -beat * 5.5));
+    }
+    else if(minIdx == offset + 6)
+    {
+        dest = vec3(step(fract(uv.y-beat/2.0), 0.5));
+    }
+    else if(minIdx == offset + 7)
+    {
+        dest = vec3(step(abs(sin(length(uv.y-0.5) * 10.0 + beat)), 0.75));
+    }
+
     color = vec4(dest, 1.0);
     
 }
